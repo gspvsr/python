@@ -146,5 +146,5 @@ api.add_resource(Divide, "/division")
 def gsp_world():
     return "hi gsp how are you"
 
-if __name__=="__main__":
-    app.run(host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
