@@ -102,8 +102,8 @@ class Get(Resource):
         users.update({
             "Username" : username
         }, {
-                "$set" :{
-                    "Tokens" : num_tokens-1
+            "$set" :{
+                "Tokens" : num_tokens-1
                 }
         })
 
