@@ -98,18 +98,18 @@ class Get(Resource):
             }
             return jsonify(retJSON)
         
-        #MAKE THE USER PAY
-        users.update({
+        # Deduct token for the operation
+        Users.update_one({
             "Username" : username
         }, {
-            "$set" :{
-                "Tokens" : num_tokens-1
-                }
+            "$set" : {
+                "Tokens" : num_tokens - 1
+            }
         })
 
-        sentence = Users.find({
+        sentence = Users.find_one({
             "Username" : username
-        })[0]["Sentence"]
+        })["Sentence"]
 
         retJson = {
             "status" : 200,
