@@ -97,6 +97,15 @@ class Get(Resource):
                 "status" : 301
             }
             return jsonify(retJSON)
+        
+        #MAKE THE USER PAY
+        users.update({
+            "Username" : username
+        }, {
+                "$set" :{
+                    "Tokens" : num_tokens-1
+                }
+        })
 
         sentence = Users.find({
             "Username" : username
