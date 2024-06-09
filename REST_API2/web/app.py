@@ -79,7 +79,7 @@ class Store(Resource):
         return 0
 
 class Get(Resource):
-    def get(self):
+    def post(self):
         postedData = request.get_json()
         username = postedData["username"]
         password = postedData["password"]
