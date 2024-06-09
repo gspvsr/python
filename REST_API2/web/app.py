@@ -78,8 +78,40 @@ class Store(Resource):
             return user["Tokens"]
         return 0
 
+class Get(Resource):
+    def get(self):
+        postedData = request.get_json()
+        Username = postedData["username"]
+        password = postedData["password"]
+
+        correct_pw = verifyPW(username, password)
+        if not correct_pw:
+            retJSON = {
+                "status" : 302
+            }
+            return jsonify(retJSON)
+        
+        num_tokens = countTokens(username)
+        if num_tokens <= 0:
+            retJSON = {
+                "status" : 301
+            }
+            return jsonify(retJSON)
+
+        sentence = users.find({
+            "Username" : username
+        })[0]["Sentence"]
+
+        retJson = {
+            "status" : 200,
+            "sentence" : sentence
+        }
+        return jsonify(retJson)
+    
+  
 api.add_resource(Register, "/register")
 api.add_resource(Store, "/store")
+api.add_resource(Get, "/Get")  
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
