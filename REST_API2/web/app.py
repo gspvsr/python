@@ -59,34 +59,42 @@ class Register(Resource):
         })[(0)["Tokens"]]
         return tokens
     
-class Store(Resource):
+class Register(Resource):
     def post(self):
-        # step1: Get the posted data
         postedData = request.get_json()
-
-        # step2: read the data.
         username = postedData["username"]
         password = postedData["password"]
-        sentence = postedData[["sentence"]]
+        hashed_pw = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+        Users.insert_one({
+            "Username" : username,
+            "password" : hashed_pw,
+            "Sentence" : "",
+            "Tokens" : 10  # Each user gets 10 tokens initially
+        })
+        retJSON = {
+            "status" : 200,
+            "msg" : "you have successfully connected to API"
+        }   
+        return jsonify(retJSON)
 
-        # step3: verify username and password match.
-        correct_pw = verifyPW(username, password)
-
+class Store(Resource):
+    def post(self):
+        postedData = request.get_json()
+        username = postedData["username"]
+        password = postedData["password"]
+        sentence = postedData["sentence"]  # Correct the key for the sentence
+        correct_pw = Register.verifyPW(username, password)
         if not correct_pw:
             retJSON = {
                 "Status" : 302
             }
-            return jsonify(retJson)
-
-        # step4: verify if the user has enough tokens.
-        num_tokens = countTokens(username)
-        if num_tokens <=0:
-            retJson = {
+            return jsonify(retJSON)
+        num_tokens = Register.verifyTokens(username)
+        if num_tokens <= 0:
+            retJSON = {
                 "status" : 301
             }
-            return jsonify(retJson)
-        # step5: store sentence take one away return 200
-
+            return jsonify(retJSON)
         Users.update_one({
             "Username" : username
         },
@@ -95,14 +103,12 @@ class Store(Resource):
                 "Sentence" : sentence,
                 "Tokens" : num_tokens - 1
             } 
-
         })
-
-        retJson = {
+        retJSON = {
             "status" : 200,
             "msg": "Sentence saved successfully"
         }
-        return jsonify(retJson)
+        return jsonify(retJSON)
         
 api.add_resource(Register, "/register")
 api.add_resource(Store, "/store")
