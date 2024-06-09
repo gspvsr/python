@@ -81,24 +81,24 @@ class Store(Resource):
 class Get(Resource):
     def get(self):
         postedData = request.get_json()
-        Username = postedData["username"]
+        username = postedData["username"]
         password = postedData["password"]
 
-        correct_pw = verifyPW(username, password)
+        correct_pw = Store.verifyPW(username, password)
         if not correct_pw:
             retJSON = {
                 "status" : 302
             }
             return jsonify(retJSON)
         
-        num_tokens = countTokens(username)
+        num_tokens = Store.verifyTokens(username)
         if num_tokens <= 0:
             retJSON = {
                 "status" : 301
             }
             return jsonify(retJSON)
 
-        sentence = users.find({
+        sentence = Users.find({
             "Username" : username
         })[0]["Sentence"]
 
@@ -111,7 +111,7 @@ class Get(Resource):
   
 api.add_resource(Register, "/register")
 api.add_resource(Store, "/store")
-api.add_resource(Get, "/Get")  
+api.add_resource(Get, "/get")  
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
